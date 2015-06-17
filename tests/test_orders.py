@@ -195,3 +195,98 @@ class TestOrdersClass(unittest.TestCase):
         state = Orders.State.RECEIVED
         raw_contract = 'AHAHAHAHJOKE!'
         self.assertEqual(self.orders.get_offer_json(raw_contract, state), '')
+
+    def test_get_buyer_json_with_need_to_pay_order(self):
+        """
+        Test Orders.get_buyer_json() with need to pay order
+        """
+        state = Orders.State.NEED_TO_PAY
+        raw_contract = '1st line \n' \
+                       '2nd line \n' \
+                       '3th line \n' \
+                       '4th line \n' \
+                       '5th line \n' \
+                       '6th line \n' \
+                       '7th line \n' \
+                       '8th line \n' \
+                       '-----BEGIN PGP SIGNATURE-----\n' \
+                       '"Buyer": "a very honest buyer"} \n' \
+                       '- -----BEGIN PGP SIGNATURE'
+        self.assertEqual(self.orders.get_buyer_json(raw_contract, state), {'Buyer': 'a very honest buyer'})
+
+    def test_get_buyer_json_with_sent_order(self):
+        """
+        Test Orders.get_buyer_json() with sent order
+        """
+        state = Orders.State.SENT
+        raw_contract = '1st line \n' \
+                       '2nd line \n' \
+                       '3th line \n' \
+                       '4th line \n' \
+                       '5th line \n' \
+                       '6th line \n' \
+                       '7th line \n' \
+                       '-----BEGIN PGP SIGNATURE-----\n' \
+                       '"Buyer": "a very honest buyer"}\n' \
+                       '-----BEGIN PGP SIGNATURE'
+        self.assertEqual(self.orders.get_buyer_json(raw_contract, state), {'Buyer': 'a very honest buyer'})
+
+    def test_get_notary_json_with_notarized_order(self):
+        """
+        Test Orders.get_notary_json() with notarized order
+        """
+        state = Orders.State.NOTARIZED
+        raw_contract = '1st line \n' \
+                       '2nd line \n' \
+                       '3th line \n' \
+                       '4th line \n' \
+                       '5th line \n' \
+                       '6th line \n' \
+                       '7th line \n' \
+                       '8th line \n' \
+                       '-----BEGIN PGP SIGNATURE-----\n' \
+                       '"Buyer": "a very honest buyer"} \n' \
+                       '- -----BEGIN PGP SIGNATURE\n' \
+                       '"Notary": "notaaaary"}\n' \
+                       '-----BEGIN PGP SIGNATURE'
+        self.assertEqual(self.orders.get_notary_json(raw_contract, state), {'Notary': 'notaaaary'})
+
+    def test_get_notary_json_with_sent_order(self):
+        """
+        Test Orders.get_notary_json() with sent order
+        """
+        state = Orders.State.SENT
+        raw_contract = '1st line \n' \
+                       '2nd line \n' \
+                       '3th line \n' \
+                       '4th line \n' \
+                       '5th line \n' \
+                       '6th line \n' \
+                       '-----BEGIN PGP SIGNATURE-----\n' \
+                       '"Buyer": "a very honest buyer"} \n' \
+                       '- -----BEGIN PGP SIGNATURE\n' \
+                       '"Notary": "notaaaary"}\n' \
+                       '-----BEGIN PGP SIGNATURE'
+        self.assertEqual(self.orders.get_notary_json(raw_contract, state), {'Notary': 'notaaaary'})
+
+    def test_get_qr_code(self):
+        """
+        Test Orders.get_qr_code()
+        """
+        item_title = ''
+        address = ''
+        total = ''
+        self.assertEqual(self.orders.get_qr_code(item_title, address, total),
+                         'iVBORw0KGgoAAAANSUhEUgAAAXIAAAFyAQAAAADAX2ykAAACkUlEQVR4nO2bTYrjMBBGX40NvZQh\n'
+                         'B8hR5Js1c6S+gXSUPsCAtAzI1Cwkx06gu6fpxGND1SJY1lt8UJRVP4oo37H461s4GG+88cYbb7zx\n'
+                         'H/HSrIcofV0SpQfyvDduqMf4B/NeVVUTyAioagFcQUY6VVXVW/7Zeox/MJ+vEeouAvlF5TWBBqAG\n'
+                         '9rZ6jH8Wn3tkZBL9PbRw/r96jP8J39+tFaZe4wD4d9lej/HP4Z2qBqBlVXQqo2unbjuON9Vj/GP4\n'
+                         'Fr+xhmqH+HQq4tMJyKcCTDdRvDf9xn9u1b/rJqW7CPFcULiI3u7tT7/xX1gtflp91CnQKT6BBtpS\n'
+                         'w8xp2Jt+47+wVty6wlLmqqZONbiCBlfAp1YEm3+Pxs/xm1qti1/CuT6VGsnm30Py7fyNQ1fAJQRA\n'
+                         'yQP4MPUahz+AS1vpMf6x/Kr+lVbwTr3GsWsVkX/v592whR7jH8tX74nXSTSeS6/k0ypjFv8GAtca\n'
+                         'aW/6jf/cbuqj/KKCKwhMgg+dzn6dw3l3+o3/wlredPNELZLqi7JKvCy/OhrfvFoLIqBm0ppAg5uz\n'
+                         'aE2Yf4/My8gk8lqnvlpbz/Kaputov7P57zH5uf88dAXyQP2J0pZKPpV1A3pv+o3/J97rRcC1ThY+\n'
+                         'TUIbIhWIZ5sfHZRf959rmyq11Kp6GpjPZDt/D8ijt9YmwXX0u3h63jb/HpJf7k9qYBLIIu2bnftV\n'
+                         'E2uv+o3/0O7mg7UWqgGbuI4bin2fj80v9ydrLTS1ZRSR+d2Weox/Eh+HebQfz9fEK4t8xD9bj/E/\n'
+                         '4u/vTwIg0Jd6k7JOCt8202P8c3h3bT27iyz1b72JFehUxk31GP8YfnUrh6UgWqVbdn/j0LzY/7uN\n'
+                         'N9544403fnP+L+ApxaQY9nyeAAAAAElFTkSuQmCC\n')
