@@ -273,7 +273,7 @@ class TestOrdersClass(unittest.TestCase):
         """
         Test Orders.get_qr_code()
         """
-        item_title = ''
+        item_title = u''
         address = ''
         total = ''
         self.assertEqual(self.orders.get_qr_code(item_title, address, total),
